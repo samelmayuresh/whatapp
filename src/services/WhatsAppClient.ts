@@ -44,14 +44,27 @@ export class WhatsAppClient extends EventEmitter {
           '--disable-features=VizDisplayCompositor',
           '--disable-extensions',
           '--disable-plugins',
-          '--disable-images',
-          '--disable-javascript',
           '--disable-default-apps',
           '--disable-background-timer-throttling',
           '--disable-backgrounding-occluded-windows',
-          '--disable-renderer-backgrounding'
+          '--disable-renderer-backgrounding',
+          '--disable-ipc-flooding-protection',
+          '--disable-hang-monitor',
+          '--disable-client-side-phishing-detection',
+          '--disable-component-update',
+          '--disable-domain-reliability',
+          '--disable-sync',
+          '--disable-translate',
+          '--hide-scrollbars',
+          '--mute-audio',
+          '--no-default-browser-check',
+          '--no-pings',
+          '--password-store=basic',
+          '--use-mock-keychain',
+          '--disable-blink-features=AutomationControlled'
         ],
-        timeout: 60000
+        timeout: 120000,
+        executablePath: process.env.PUPPETEER_EXECUTABLE_PATH || undefined
       }
     });
 

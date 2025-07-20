@@ -155,11 +155,17 @@ export class WhatsAppAutoReplyApp {
             // Initialize configuration watcher
             this.setupConfigurationWatcher();
 
-            // Initialize WhatsApp client
-            await this.initializeWhatsAppClient();
-
-            // Initialize web server
+            // Initialize web server first (always works)
             await this.initializeWebServer();
+
+            // Initialize WhatsApp client (may fail in cloud environments)
+            try {
+                await this.initializeWhatsAppClient();
+            } catch (error) {
+                console.warn('WhatsApp client initialization failed, continuing in web-only mode:', error);
+                this.activityLogger.logError('system', `WhatsApp initialization failed: ${error.message}`);
+                // Continue without WhatsApp - web dashboard will still work
+            }
 
             // Set up message handling
             this.setupMessageHandling();
@@ -361,8 +367,36 @@ export class WhatsAppAutoReplyApp {
             this.activityLogger.logError('system', 'WhatsApp authentication failed');
         });
 
-        // Initialize the client
-        await this.whatsappClient.initialize();
+        this.whatsappClient.on('error', (error) => {
+            console.error('WhatsApp client error:', error);
+            this.activityLogger.logError('system', `WhatsApp client error: ${error.message}`);
+        });
+
+        // Initialize the client with retry logic
+        let retryCount = 0;
+        const maxRetries = 3;
+        
+        while (retryCount < maxRetries) {
+            try {
+                console.log(`WhatsApp initialization attempt ${retryCount + 1}/${maxRetries}`);
+                await this.whatsappClient.initialize();
+                console.log('WhatsApp client initialized successfully');
+                return;
+            } catch (error) {
+                retryCount++;
+                console.error(`WhatsApp initialization attempt ${retryCount} failed:`, error);
+                
+                if (retryCount >= maxRetries) {
+                    console.error('All WhatsApp initialization attempts failed. Starting in web-only mode.');
+                    this.activityLogger.logError('system', `WhatsApp initialization failed after ${maxRetries} attempts: ${error.message}`);
+                    // Don't throw - continue with web server only
+                    return;
+                }
+                
+                // Wait before retry
+                await new Promise(resolve => setTimeout(resolve, 5000 * retryCount));
+            }
+        }
     }
 
     private async initializeWebServer(): Promise<void> {
