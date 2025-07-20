@@ -402,10 +402,15 @@ export class WhatsAppAutoReplyApp {
     private async initializeWebServer(): Promise<void> {
         console.log('Initializing web server...');
         
+        // Ensure web server starts immediately for Render port detection
         await this.webServer.start();
         
         const webConfig = this.configManager.getWebServerConfig();
-        console.log(`Web server started on http://${webConfig.host || 'localhost'}:${webConfig.port || 3000}`);
+        const actualPort = process.env.PORT || webConfig.port || 3000;
+        const actualHost = webConfig.host || '0.0.0.0';
+        
+        console.log(`Web server started on http://${actualHost}:${actualPort}`);
+        console.log(`Render port detection: Server listening on 0.0.0.0:${actualPort}`);
     }
 
     private setupMessageHandling(): void {

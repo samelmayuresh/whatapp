@@ -20,3 +20,7 @@ services:
         value: /usr/bin/google-chrome-stable
       - key: CHROME_PATH
         value: /usr/bin/google-chrome-stable
+      - key: PUPPETEER_SKIP_DOWNLOAD
+        value: true
+      - key: PUPPETEER_CACHE_DIR
+        value: /tmp/.puppeteer_cache

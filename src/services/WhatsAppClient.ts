@@ -63,8 +63,10 @@ export class WhatsAppClient extends EventEmitter {
           '--use-mock-keychain',
           '--disable-blink-features=AutomationControlled'
         ],
-        timeout: 120000,
-        executablePath: process.env.PUPPETEER_EXECUTABLE_PATH || undefined
+        timeout: 180000, // Increased timeout for cloud environments
+        executablePath: process.env.PUPPETEER_EXECUTABLE_PATH || undefined,
+        ignoreDefaultArgs: ['--disable-extensions'],
+        defaultViewport: null
       }
     });
 

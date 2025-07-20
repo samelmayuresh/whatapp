@@ -67,9 +67,14 @@ export class WebServer {
     }
 
     return new Promise((resolve, reject) => {
+      // Log binding attempt
+      console.log(`Attempting to bind web server to ${this.options.host}:${this.options.port}`);
+      
       this.server.listen(this.options.port, this.options.host, () => {
         this.isRunning = true;
-        console.log(`Web server started on http://${this.options.host}:${this.options.port}`);
+        console.log(`✅ Web server successfully started on http://${this.options.host}:${this.options.port}`);
+        console.log(`🔍 Render port detection: Server is listening on 0.0.0.0:${this.options.port}`);
+        
         this.activityLogger.logSystemEvent('web_server_started', {
           host: this.options.host,
           port: this.options.port
@@ -148,12 +153,22 @@ export class WebServer {
     // API routes
     this.app.use('/api', apiRoutes.getRouter());
 
+    // Simple health check for Render port detection
+    this.app.get('/', (req, res) => {
+      res.json({ 
+        status: 'ok', 
+        service: 'WhatsApp Auto-Reply',
+        timestamp: new Date().toISOString(),
+        port: this.options.port
+      });
+    });
+
     // Handle favicon.ico specifically
     this.app.get('/favicon.ico', (req, res) => {
       res.status(204).end();
     });
 
-    // Serve main page for all non-API routes
+    // Serve main page for all non-API routes (except root)
     this.app.get('*', (req, res) => {
       const indexPath = path.resolve(this.options.publicPath, 'index.html');
       res.sendFile(indexPath);
