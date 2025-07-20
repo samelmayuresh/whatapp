@@ -1,0 +1,43 @@
+[Unit]
+Description=WhatsApp Auto-Reply System
+Documentation=https://github.com/your-repo/whatsapp-auto-reply
+After=network.target
+
+[Service]
+Type=simple
+User=whatsapp
+Group=whatsapp
+WorkingDirectory=/opt/whatsapp-auto-reply
+ExecStart=/usr/bin/node dist/index.js
+ExecReload=/bin/kill -HUP $MAINPID
+Restart=always
+RestartSec=10
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=whatsapp-auto-reply
+
+# Environment variables
+Environment=NODE_ENV=production
+Environment=PORT=3000
+Environment=HOST=localhost
+Environment=LOG_LEVEL=info
+
+# Security settings
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+ReadWritePaths=/opt/whatsapp-auto-reply/logs
+ReadWritePaths=/opt/whatsapp-auto-reply/data
+ReadWritePaths=/opt/whatsapp-auto-reply/backups
+ReadWritePaths=/opt/whatsapp-auto-reply/temp
+
+# Resource limits
+LimitNOFILE=65536
+LimitNPROC=4096
+
+# Health check
+ExecStartPre=/usr/bin/node /opt/whatsapp-auto-reply/scripts/verify-deployment.js
+
+[Install]
+WantedBy=multi-user.target

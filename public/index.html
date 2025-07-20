@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WhatsApp Auto-Reply Configuration</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>WhatsApp Auto-Reply System</h1>
+            <div class="status-bar">
+                <div class="status-item">
+                    <span class="status-label">WhatsApp:</span>
+                    <span id="whatsapp-status" class="status-value">Connecting...</span>
+                </div>
+                <div class="status-item">
+                    <span class="status-label">Auto-Reply:</span>
+                    <span id="reply-engine-status" class="status-value">Inactive</span>
+                </div>
+            </div>
+        </header>
+
+        <nav class="tabs">
+            <button class="tab-button active" data-tab="dashboard">Dashboard</button>
+            <button class="tab-button" data-tab="templates">Message Templates</button>
+            <button class="tab-button" data-tab="settings">Settings</button>
+            <button class="tab-button" data-tab="activity">Activity Log</button>
+        </nav>
+
+        <main id="app">
+            <!-- Dashboard Tab -->
+            <div id="dashboard-tab" class="tab-content active">
+                <div class="dashboard-grid">
+                    <div class="card">
+                        <h3>System Status</h3>
+                        <div id="system-status">
+                            <div class="status-row">
+                                <span>WhatsApp Connection:</span>
+                                <span id="whatsapp-connection-status">Checking...</span>
+                            </div>
+                            <div class="status-row">
+                                <span>Reply Engine:</span>
+                                <span id="engine-status">Checking...</span>
+                            </div>
+                        </div>
+                        <div class="control-buttons">
+                            <button id="start-engine-btn" class="btn btn-success">Start Auto-Reply</button>
+                            <button id="stop-engine-btn" class="btn btn-danger">Stop Auto-Reply</button>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <h3>Statistics (Last 24h)</h3>
+                        <div id="statistics">
+                            <div class="stat-item">
+                                <span class="stat-number" id="messages-received">0</span>
+                                <span class="stat-label">Messages Received</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-number" id="replies-sent">0</span>
+                                <span class="stat-label">Replies Sent</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-number" id="rate-limits">0</span>
+                                <span class="stat-label">Rate Limits Hit</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <h3>QR Code</h3>
+                        <div id="qr-code-container">
+                            <p>Scan this QR code with WhatsApp to connect:</p>
+                            <div id="qr-code">No QR code available</div>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <h3>Recent Activity</h3>
+                        <div id="recent-activity">
+                            <p>Loading recent activity...</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Templates Tab -->
+            <div id="templates-tab" class="tab-content">
+                <div class="templates-header">
+                    <h2>Message Templates</h2>
+                    <button id="add-template-btn" class="btn btn-primary">Add Template</button>
+                </div>
+                <div id="templates-list">
+                    <p>Loading templates...</p>
+                </div>
+            </div>
+
+            <!-- Settings Tab -->
+            <div id="settings-tab" class="tab-content">
+                <div class="settings-form">
+                    <h2>System Settings</h2>
+                    <form id="settings-form">
+                        <div class="form-group">
+                            <label>
+                                <input type="checkbox" id="system-enabled"> Enable Auto-Reply System
+                            </label>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>
+                                <input type="checkbox" id="pause-when-active"> Pause when user is active
+                            </label>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="rate-limit">Rate Limit (minutes between replies):</label>
+                            <input type="number" id="rate-limit" min="1" max="1440" value="30">
+                        </div>
+
+                        <div class="form-group">
+                            <label>Business Hours:</label>
+                            <div class="business-hours">
+                                <input type="time" id="business-start" value="09:00">
+                                <span>to</span>
+                                <input type="time" id="business-end" value="17:00">
+                            </div>
+                            <div class="business-days">
+                                <label><input type="checkbox" value="1" checked> Monday</label>
+                                <label><input type="checkbox" value="2" checked> Tuesday</label>
+                                <label><input type="checkbox" value="3" checked> Wednesday</label>
+                                <label><input type="checkbox" value="4" checked> Thursday</label>
+                                <label><input type="checkbox" value="5" checked> Friday</label>
+                                <label><input type="checkbox" value="6"> Saturday</label>
+                                <label><input type="checkbox" value="7"> Sunday</label>
+                            </div>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary">Save Settings</button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Activity Tab -->
+            <div id="activity-tab" class="tab-content">
+                <div class="activity-header">
+                    <h2>Activity Log</h2>
+                    <div class="activity-controls">
+                        <select id="activity-filter">
+                            <option value="">All Activities</option>
+                            <option value="message_received">Messages Received</option>
+                            <option value="reply_sent">Replies Sent</option>
+                            <option value="error">Errors</option>
+                            <option value="system_event">System Events</option>
+                        </select>
+                        <button id="refresh-activity-btn" class="btn btn-secondary">Refresh</button>
+                        <button id="export-activity-btn" class="btn btn-secondary">Export</button>
+                    </div>
+                </div>
+                <div id="activity-log">
+                    <p>Loading activity log...</p>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Modal for template editing -->
+    <div id="template-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="modal-title">Add Template</h3>
+                <span class="close">&times;</span>
+            </div>
+            <div class="modal-body">
+                <form id="template-form">
+                    <div class="form-group">
+                        <label for="template-name">Template Name:</label>
+                        <input type="text" id="template-name" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="template-content">Message Content:</label>
+                        <textarea id="template-content" rows="4" required></textarea>
+                        <small>Available placeholders: {name}, {time}, {date}, {day}</small>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>
+                            <input type="checkbox" id="template-default"> Set as default template
+                        </label>
+                    </div>
+                    
+                    <div class="form-actions">
+                        <button type="button" class="btn btn-secondary" id="cancel-template">Cancel</button>
+                        <button type="submit" class="btn btn-primary">Save Template</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>

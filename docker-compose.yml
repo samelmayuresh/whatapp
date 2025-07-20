@@ -1,0 +1,54 @@
+version: '3.8'
+
+services:
+  whatsapp-auto-reply:
+    build: .
+    container_name: whatsapp-auto-reply
+    restart: unless-stopped
+    ports:
+      - "${PORT:-3000}:3000"
+    volumes:
+      - ./config:/app/config:ro
+      - ./logs:/app/logs
+      - ./data:/app/data
+      - ./backups:/app/backups
+    environment:
+      - NODE_ENV=${NODE_ENV:-production}
+      - PORT=${PORT:-3000}
+      - HOST=${HOST:-0.0.0.0}
+      - LOG_LEVEL=${LOG_LEVEL:-info}
+    healthcheck:
+      test: ["CMD", "node", "scripts/health-check.js"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+    networks:
+      - whatsapp-network
+
+  # Optional: Add a reverse proxy for production
+  nginx:
+    image: nginx:alpine
+    container_name: whatsapp-nginx
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./ssl:/etc/nginx/ssl:ro
+    depends_on:
+      - whatsapp-auto-reply
+    networks:
+      - whatsapp-network
+    profiles:
+      - production
+
+networks:
+  whatsapp-network:
+    driver: bridge
+
+volumes:
+  whatsapp-logs:
+  whatsapp-data:
+  whatsapp-backups:

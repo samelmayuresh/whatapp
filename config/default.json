@@ -1,0 +1,26 @@
+{
+  "system": {
+    "enabled": true,
+    "pauseWhenActive": true,
+    "rateLimitMinutes": 30,
+    "businessHours": {
+      "start": "09:00",
+      "end": "17:00",
+      "days": [1, 2, 3, 4, 5]
+    },
+    "blacklistedContacts": []
+  },
+  "messageTemplates": [
+    {
+      "id": "default",
+      "name": "Default Auto-Reply",
+      "content": "Hi {name}! Thanks for your message. I'll get back to you soon.",
+      "isDefault": true,
+      "placeholders": ["{name}", "{time}"]
+    }
+  ],
+  "webServer": {
+    "port": 3000,
+    "host": "localhost"
+  }
+}
