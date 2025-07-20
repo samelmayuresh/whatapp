@@ -161,7 +161,7 @@ export class WhatsAppAutoReplyApp {
             // Initialize WhatsApp client (may fail in cloud environments)
             try {
                 await this.initializeWhatsAppClient();
-            } catch (error) {
+            } catch (error: unknown) {
                 console.warn('WhatsApp client initialization failed, continuing in web-only mode:', error);
                 this.activityLogger.logError('system', `WhatsApp initialization failed: ${error instanceof Error ? error.message : String(error)}`);
                 // Continue without WhatsApp - web dashboard will still work
@@ -382,7 +382,7 @@ export class WhatsAppAutoReplyApp {
                 await this.whatsappClient.initialize();
                 console.log('WhatsApp client initialized successfully');
                 return;
-            } catch (error) {
+            } catch (error: unknown) {
                 retryCount++;
                 console.error(`WhatsApp initialization attempt ${retryCount} failed:`, error);
                 
