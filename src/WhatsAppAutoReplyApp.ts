@@ -163,7 +163,7 @@ export class WhatsAppAutoReplyApp {
                 await this.initializeWhatsAppClient();
             } catch (error) {
                 console.warn('WhatsApp client initialization failed, continuing in web-only mode:', error);
-                this.activityLogger.logError('system', `WhatsApp initialization failed: ${error.message}`);
+                this.activityLogger.logError('system', `WhatsApp initialization failed: ${error instanceof Error ? error.message : String(error)}`);
                 // Continue without WhatsApp - web dashboard will still work
             }
 
@@ -388,7 +388,7 @@ export class WhatsAppAutoReplyApp {
                 
                 if (retryCount >= maxRetries) {
                     console.error('All WhatsApp initialization attempts failed. Starting in web-only mode.');
-                    this.activityLogger.logError('system', `WhatsApp initialization failed after ${maxRetries} attempts: ${error.message}`);
+                    this.activityLogger.logError('system', `WhatsApp initialization failed after ${maxRetries} attempts: ${error instanceof Error ? error.message : String(error)}`);
                     // Don't throw - continue with web server only
                     return;
                 }
