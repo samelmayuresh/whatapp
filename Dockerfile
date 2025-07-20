@@ -22,7 +22,7 @@ ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true \
 COPY package*.json ./
 
 # Install dependencies
-RUN npm install --only=production && npm cache clean --force
+RUN npm install && npm cache clean --force
 
 # Copy application code
 COPY . .

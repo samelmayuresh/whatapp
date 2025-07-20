@@ -3,7 +3,7 @@ services:
     name: whatsapp-auto-reply
     env: node
     plan: free
-    buildCommand: PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true npm install && npm run build
+    buildCommand: npm install && npm run build
     startCommand: npm start
     envVars:
       - key: NODE_ENV
