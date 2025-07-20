@@ -1,14 +1,47 @@
 {
+  "whatsapp": {
+    "sessionName": "whatsapp-session",
+    "qrCodeTimeout": 60000,
+    "authTimeout": 60000,
+    "restartOnAuthFail": true,
+    "puppeteerOptions": {
+      "headless": true,
+      "args": [
+        "--no-sandbox",
+        "--disable-setuid-sandbox",
+        "--disable-dev-shm-usage",
+        "--disable-accelerated-2d-canvas",
+        "--no-first-run",
+        "--no-zygote",
+        "--single-process",
+        "--disable-gpu"
+      ]
+    }
+  },
+  "server": {
+    "port": 10000,
+    "host": "0.0.0.0"
+  },
   "system": {
     "enabled": true,
-    "pauseWhenActive": true,
+    "pauseWhenActive": false,
     "rateLimitMinutes": 30,
     "businessHours": {
+      "enabled": false,
       "start": "09:00",
       "end": "17:00",
       "days": [1, 2, 3, 4, 5]
     },
     "blacklistedContacts": []
+  },
+  "rateLimiter": {
+    "windowMs": 3000,
+    "maxMessages": 1
+  },
+  "autoReply": {
+    "enabled": true,
+    "defaultMessage": "Thank you for your message! We'll get back to you soon.",
+    "templates": []
   },
   "messageTemplates": [
     {
@@ -20,7 +53,7 @@
     }
   ],
   "webServer": {
-    "port": 3000,
-    "host": "localhost"
+    "port": 10000,
+    "host": "0.0.0.0"
   }
 }

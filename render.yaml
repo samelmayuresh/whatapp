@@ -1,0 +1,21 @@
+services:
+  - type: web
+    name: whatsapp-auto-reply
+    env: node
+    plan: free
+    buildCommand: npm install && npm run build
+    startCommand: npm start
+    healthCheckPath: /health
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 10000
+      - key: PUPPETEER_SKIP_CHROMIUM_DOWNLOAD
+        value: true
+      - key: PUPPETEER_EXECUTABLE_PATH
+        value: /usr/bin/google-chrome-stable
+    disk:
+      name: whatsapp-data
+      mountPath: /opt/render/project/src/data
+      sizeGB: 1

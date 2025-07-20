@@ -1,26 +1,22 @@
-# WhatsApp Auto-Reply System Dockerfile
-FROM node:18-alpine
+# WhatsApp Auto-Reply System Dockerfile - Optimized for Render
+FROM node:18-slim
 
 # Set working directory
 WORKDIR /app
 
-# Install system dependencies
-RUN apk add --no-cache \
-    chromium \
-    nss \
-    freetype \
-    freetype-dev \
-    harfbuzz \
-    ca-certificates \
-    ttf-freefont
+# Install dependencies for Puppeteer and Chrome
+RUN apt-get update \
+    && apt-get install -y wget gnupg curl \
+    && wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | apt-key add - \
+    && sh -c 'echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main" >> /etc/apt/sources.list.d/google.list' \
+    && apt-get update \
+    && apt-get install -y google-chrome-stable fonts-ipafont-gothic fonts-wqy-zenhei fonts-thai-tlwg fonts-kacst fonts-freefont-ttf libxss1 \
+      --no-install-recommends \
+    && rm -rf /var/lib/apt/lists/*
 
-# Tell Puppeteer to skip installing Chromium. We'll be using the installed package.
+# Tell Puppeteer to skip installing Chromium
 ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true \
-    PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium-browser
-
-# Create app user
-RUN addgroup -g 1001 -S nodejs
-RUN adduser -S whatsapp -u 1001
+    PUPPETEER_EXECUTABLE_PATH=/usr/bin/google-chrome-stable
 
 # Copy package files
 COPY package*.json ./
@@ -35,21 +31,17 @@ COPY . .
 RUN npm run build
 
 # Create necessary directories
-RUN mkdir -p logs config data backups temp && \
-    chown -R whatsapp:nodejs logs config data backups temp
+RUN mkdir -p logs/activity logs/errors logs/system data temp backups config
 
-# Copy default configuration if it doesn't exist
-COPY config/default.json config/default.json.example
+# Set permissions
+RUN chmod -R 755 /app
 
-# Switch to non-root user
-USER whatsapp
-
-# Expose port
-EXPOSE 3000
+# Expose port (Render uses PORT environment variable)
+EXPOSE 10000
 
 # Health check
 HEALTHCHECK --interval=30s --timeout=10s --start-period=60s --retries=3 \
-    CMD node scripts/health-check.js || exit 1
+    CMD curl -f http://localhost:${PORT:-10000}/health || exit 1
 
 # Start the application
 CMD ["npm", "start"]
